@@ -1,4 +1,5 @@
 require './db/mysql_connector.rb'
+require './models/user.rb'
 
 
 class Post
@@ -46,14 +47,9 @@ class Post
   end
 
   def validate_user_id()
-    count_users = @@db_client.query("
-      SELECT COUNT(*) AS count
-      FROM users
-      WHERE id = #{@user_id}
-    ")
-
-    num_of_users_with_same_id = count_users.first['count']
-    if num_of_users_with_same_id == 0
+    begin
+      user = User.get_by_id(@user_id)
+    rescue Exception
       raise StandardError.new("there is no user with id #{@user_id}")
     end
   end

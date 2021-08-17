@@ -1,5 +1,6 @@
 require './db/mysql_connector.rb'
-
+require './models/post.rb'
+require './models/user.rb'
 
 class Comment
   attr_reader :id, :user_id, :post_id, :created_at, :updated_at
@@ -48,27 +49,17 @@ class Comment
   end
 
   def validate_user_id()
-    count_users = @@db_client.query("
-      SELECT COUNT(*) AS count
-      FROM users
-      WHERE id = #{@user_id}
-    ")
-
-    num_of_users_with_same_id = count_users.first['count']
-    if num_of_users_with_same_id == 0
+    begin
+      user = User.get_by_id(@user_id)
+    rescue Exception
       raise StandardError.new("there is no user with id #{@user_id}")
     end
   end
 
   def validate_post_id()
-    count_posts = @@db_client.query("
-      SELECT COUNT(*) AS count
-      FROM posts
-      WHERE id = #{@post_id}
-    ")
-
-    num_of_posts_with_same_id = count_posts.first['count']
-    if num_of_posts_with_same_id == 0
+    begin
+      post = Post.get_by_id(@post_id)
+    rescue Exception
       raise StandardError.new("there is no post with id #{@post_id}")
     end
   end
