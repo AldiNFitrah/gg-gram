@@ -118,4 +118,12 @@ class User
     return users
   end
 
+  def ==(other)
+    return (
+      self.id == other.id &&
+      self.username == other.username &&
+      self.email == other.email &&
+      self.bio_description == other.bio_description
+    )
+  end
 end

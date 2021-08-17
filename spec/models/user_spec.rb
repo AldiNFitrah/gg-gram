@@ -148,4 +148,21 @@ describe User do
       end
     end
   end
+
+  describe '#==' do
+    context 'given all same attributes' do
+      it 'returns true' do
+        db_client.query("
+          INSERT INTO users(username, email, bio_description) VALUES
+            ('uname', 'abc@abc.com', '')
+        ")
+        user_id = db_client.last_id
+
+        user1 = User.get_by_id(user_id)
+        user2 = User.get_by_id(user_id)
+
+        expect(user1 == user2).to(be(true))
+      end
+    end
+  end
 end
