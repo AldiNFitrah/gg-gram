@@ -24,10 +24,7 @@ class Post
 
     @@db_client.query("
       INSERT INTO posts(user_id, content, attachment_url, hashtags_str) VALUES
-        (#{@user_id}, 
-          '#{@content}', 
-          '#{@attachment_url}', 
-          '#{esacaped_hashtags_str}')
+        (#{@user_id}, '#{@content}', '#{@attachment_url}', '#{esacaped_hashtags_str}')
     ")
     @id = @@db_client.last_id
 
