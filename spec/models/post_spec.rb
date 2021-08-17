@@ -132,5 +132,42 @@ describe Post do
     end
   end
 
-  
+  describe '.all' do
+    context 'given 2 post instances in db' do
+      it 'returns the 2 posts' do
+        db_client.query("
+          INSERT INTO posts(user_id, content, attachment_url, hashtags_str) VALUES
+            (#{@user.id}, 'content', '', '[]')
+        ")
+
+        db_client.query("
+          INSERT INTO posts(user_id, content, attachment_url, hashtags_str) VALUES
+            (#{@user.id}, 'another content', '', '[]')
+        ")
+
+        expect(Post.all().size).to(eq(2))
+      end
+    end
+  end
+
+  describe '.get_by_id' do
+    context 'given existing post id' do
+      it 'returns the corresponding post' do
+        db_client.query("
+          INSERT INTO posts(user_id, content, attachment_url, hashtags_str) VALUES
+            (#{@user.id}, 'my content', '', '[]')
+        ")
+        post_id = db_client.last_id
+
+        post = Post.get_by_id(post_id)
+        expect(post.content).to(eq('my content'))
+      end
+    end
+
+    context 'given post id does not exist in db' do
+      it 'raises error' do
+        expect{ Post.get_by_id(123) }.to(raise_error(StandardError, /not found/))
+      end
+    end
+  end
 end

@@ -89,6 +89,44 @@ class Post
     end
   end
 
+  def self.all()
+    raw_data = @@db_client.query("
+      SELECT *
+      FROM posts
+    ")
+    return convert_sql_to_ruby(raw_data)
+  end
 
-  
+  def self.get_by_id(id)
+    raw_data = @@db_client.query("
+      SELECT *
+      FROM posts
+      WHERE id = #{id}
+    ")
+
+    if raw_data.size() == 0
+      raise StandardError.new('post is not found')
+    end
+
+    return convert_sql_to_ruby(raw_data)[0]
+  end
+
+  def self.convert_sql_to_ruby(raw_data)
+    posts = []
+    raw_data.each do |data|
+      post = Post.new({
+        id: data['id'],
+        user_id: data['user_id'],
+        content: data['content'],
+        attachment_url: data['attachment_url'],
+        hashtags_str: data['hashtags_str'],
+        created_at: data['created_at'],
+        updated_at: data['updated_at'],
+      })
+      posts.push(post)
+    end
+
+    return posts
+  end
+
 end
