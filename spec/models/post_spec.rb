@@ -170,4 +170,21 @@ describe Post do
       end
     end
   end
+
+  describe '#==' do
+    context 'given all same attributes' do
+      it 'returns true' do
+        db_client.query("
+          INSERT INTO posts(user_id, content, attachment_url, hashtags_str) VALUES
+            (#{@user.id}, 'content', '', '[]')
+        ")
+        post_id = db_client.last_id
+
+        post1 = Post.get_by_id(post_id)
+        post2 = Post.get_by_id(post_id)
+
+        expect(post1 == post2).to(be(true))
+      end
+    end
+  end
 end

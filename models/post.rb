@@ -129,4 +129,15 @@ class Post
     return posts
   end
 
+  def ==(other)
+    return (
+      self.id == other.id &&
+      self.user_id == other.user_id &&
+      self.content == other.content &&
+      self.attachment_url == other.attachment_url &&
+      self.hashtags_str == other.hashtags_str &&
+      self.created_at == other.created_at &&
+      self.updated_at == other.updated_at
+    )
+  end
 end
