@@ -1,5 +1,6 @@
 require './db/mysql_connector.rb'
 
+
 describe MySqlClient do
 
   describe 'is singleton' do

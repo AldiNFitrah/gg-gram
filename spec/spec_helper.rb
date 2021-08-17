@@ -6,7 +6,6 @@ ENV["DB_NAME"] = ENV["TEST_DB_NAME"]
 require 'simplecov'
 
 require './db/mysql_connector.rb'
-require './models/category.rb'
 
 SimpleCov.start
 
