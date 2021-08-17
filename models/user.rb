@@ -81,5 +81,41 @@ class User
   end
 
 
+  def self.all()
+    raw_data = @@db_client.query("
+      SELECT *
+      FROM users
+    ")
+    return convert_sql_to_ruby(raw_data)
+  end
+
+  def self.get_by_id(id)
+    raw_data = @@db_client.query("
+      SELECT *
+      FROM users
+      WHERE id = #{id}
+    ")
+
+    if raw_data.size() == 0
+      raise StandardError.new('user is not found')
+    end
+
+    return convert_sql_to_ruby(raw_data)[0]
+  end
+
+  def self.convert_sql_to_ruby(raw_data)
+    users = []
+    raw_data.each do |data|
+      user = User.new({
+        id: data['id'],
+        username: data['username'],
+        email: data['email'],
+        bio_description: data['bio_description'],
+      })
+      users.push(user)
+    end
+
+    return users
+  end
 
 end

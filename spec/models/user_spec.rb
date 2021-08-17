@@ -7,6 +7,25 @@ describe User do
   db_client = MySqlClient.instance()
 
   describe '#save' do
+    context 'given valid data' do
+      it 'saved' do
+        user = User.new({
+          username: 'username',
+          email: 'abc@abc.com',
+          bio_description: 'this is bio',
+        })
+        user.save()
+
+        raw_data = db_client.query("
+          SELECT COUNT(*) AS count
+          FROM users
+        ")
+        num_of_users = raw_data.first['count']
+
+        expect(num_of_users).to(eq(1))
+      end
+    end
+    
     context 'given valid data and try to save twice' do
       it 'raises error and only saved once' do
         user = User.new({
@@ -94,4 +113,39 @@ describe User do
     end
   end
 
+  describe '.all' do
+    context 'given 2 user instances in db' do
+      it 'returns the 2 users' do
+        db_client.query("
+          INSERT INTO users(username, email, bio_description) VALUES
+            ('uname', 'abc@abc.com', ''),
+            ('uname2', 'abcd@def.com', '')
+        ")
+
+        expect(User.all().size).to(eq(2))
+      end
+    end
+  end
+
+  describe '.get_by_id' do
+    context 'given existing user id' do
+      it 'returns the corresponding user' do
+        db_client.query("
+          INSERT INTO users(username, email, bio_description) VALUES
+            ('uname', 'abc@abc.com', '')
+        ")
+        user_id = db_client.last_id
+
+        user = User.get_by_id(user_id)
+        expect(user.username).to(eq('uname'))
+        expect(user.email).to(eq('abc@abc.com'))
+      end
+    end
+
+    context 'given user id does not exist in db' do
+      it 'raises error' do
+        expect{ User.get_by_id(123) }.to(raise_error(StandardError, /not found/))
+      end
+    end
+  end
 end
