@@ -1,3 +1,5 @@
+require 'json'
+
 require './db/mysql_connector.rb'
 
 
@@ -125,5 +127,18 @@ class User
       self.email == other.email &&
       self.bio_description == other.bio_description
     )
+  end
+
+  def to_json()
+    self.to_hash().to_json()
+  end
+
+  def to_hash()
+    return {
+      id: @id,
+      username: @username,
+      email: @email,
+      bio_description: @bio_description,
+    }
   end
 end

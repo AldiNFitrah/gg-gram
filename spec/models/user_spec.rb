@@ -25,7 +25,7 @@ describe User do
         expect(num_of_users).to(eq(1))
       end
     end
-    
+
     context 'given valid data and try to save twice' do
       it 'raises error and only saved once' do
         user = User.new({
