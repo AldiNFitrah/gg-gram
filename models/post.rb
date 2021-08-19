@@ -1,3 +1,5 @@
+require 'json'
+
 require './db/mysql_connector.rb'
 require './models/user.rb'
 
@@ -138,4 +140,19 @@ class Post
     )
   end
 
+  def to_hash()
+    return {
+      'id' => @id,
+      'user_id' => @user_id,
+      'content' => @content,
+      'attachment_url' => @attachment_url,
+      'hashtags' => @hashtags,
+      'created_at' => @created_at,
+      'updated_at' => @updated_at,
+    }
+  end
+
+  def to_json()
+    return self.to_hash().to_json()
+  end
 end

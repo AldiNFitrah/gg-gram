@@ -3,7 +3,6 @@ require 'rack/test'
 require './controllers/user_controller.rb'
 require './main.rb'
 require './models/user.rb'
-require 'ap'
 
 
 describe UserController do
