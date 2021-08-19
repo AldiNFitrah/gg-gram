@@ -36,6 +36,24 @@ describe Post do
 
         expect(num_of_posts).to(eq(1))
       end
+
+      it 'populates created_at and updated_at field' do
+        post = Post.new({
+          user_id: @user.id,
+          content: 'this is a content',
+          attachment_url: '/public/abc.jpg',
+          hashtags: ['#COMPFEST13', '#TechToElevate'],
+        })
+
+        expect(post.created_at).to(be_nil())
+        expect(post.updated_at).to(be_nil())
+
+        post.save()
+
+        expect(post.created_at).not_to(be_nil())
+        expect(post.updated_at).not_to(be_nil())
+
+      end
     end
 
     context 'given valid data and try to save twice' do

@@ -4,7 +4,7 @@ require './models/user.rb'
 
 class Post
   attr_reader :id, :user_id, :created_at, :updated_at
-  attr_accessor :content, :attachment_url, :hashtags_str
+  attr_accessor :content, :attachment_url, :hashtags
 
   @@db_client = MySqlClient.instance()
 
@@ -13,7 +13,7 @@ class Post
     @user_id = params[:user_id]
     @content = params[:content]
     @attachment_url = params[:attachment_url]
-    @hashtags = params[:hashtags] || []
+    @hashtags = params[:hashtags] || Array.new()
     @created_at = params[:created_at]
     @updated_at = params[:updated_at]
   end
@@ -26,6 +26,8 @@ class Post
         (#{@user_id}, '#{@content}', '#{@attachment_url}', '#{@hashtags}')
     ")
     @id = @@db_client.last_id
+
+    self.refresh_from_db()
 
     return self
   end
@@ -65,12 +67,23 @@ class Post
 
     @hashtags.each do |hashtag|
       if !hashtag.is_a?(String)
-        raise StandardError.new('hashtags_str contains a not-a-string element')
+        raise StandardError.new('hashtags contains a not-a-string element')
       end
       if !hashtag.start_with?('#')
-        raise StandardError.new('hashtags_str contains an invalid hashtag')
+        raise StandardError.new('hashtags contains an invalid hashtag')
       end
     end
+  end
+
+  def refresh_from_db()
+    new_data = Post.get_by_id(@id)
+
+    @user_id = new_data.user_id
+    @content = new_data.content
+    @attachment_url = new_data.attachment_url
+    @hashtags = new_data.hashtags
+    @created_at = new_data.created_at
+    @updated_at = new_data.updated_at
   end
 
   def self.all()
@@ -119,9 +132,10 @@ class Post
       self.user_id == other.user_id &&
       self.content == other.content &&
       self.attachment_url == other.attachment_url &&
-      self.hashtags_str == other.hashtags_str &&
+      self.hashtags == other.hashtags &&
       self.created_at == other.created_at &&
       self.updated_at == other.updated_at
     )
   end
+
 end
