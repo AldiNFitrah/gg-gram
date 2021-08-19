@@ -52,7 +52,6 @@ describe Post do
 
         expect(post.created_at).not_to(be_nil())
         expect(post.updated_at).not_to(be_nil())
-
       end
     end
 

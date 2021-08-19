@@ -30,6 +30,8 @@ class Comment
     ")
     @id = @@db_client.last_id
 
+    self.refresh_from_db()
+
     return self
   end
 
@@ -83,6 +85,18 @@ class Comment
         raise StandardError.new('hashtags contains an invalid hashtag')
       end
     end
+  end
+
+  def refresh_from_db()
+    new_data = Comment.get_by_id(@id)
+
+    @user_id = new_data.user_id
+    @post_id = new_data.post_id
+    @content = new_data.content
+    @attachment_url = new_data.attachment_url
+    @hashtags = new_data.hashtags
+    @created_at = new_data.created_at
+    @updated_at = new_data.updated_at
   end
 
   def self.all()

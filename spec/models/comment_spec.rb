@@ -45,6 +45,24 @@ describe Comment do
 
         expect(num_of_comments).to(eq(1))
       end
+
+      it 'populates created_at and updated_at field' do
+        comment = Comment.new({
+          user_id: @user.id,
+          post_id: @post.id,
+          content: 'this is a content',
+          attachment_url: '/public/abc.jpg',
+          hashtags: ['#COMPFEST13', '#TechToElevate'],
+        })
+
+        expect(comment.created_at).to(be_nil())
+        expect(comment.updated_at).to(be_nil())
+
+        comment.save()
+
+        expect(comment.created_at).not_to(be_nil())
+        expect(comment.updated_at).not_to(be_nil())
+      end
     end
 
     context 'given valid data and try to save twice' do
