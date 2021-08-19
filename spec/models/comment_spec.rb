@@ -17,15 +17,10 @@ describe Comment do
     @user.save()
 
     @post = Post.new({
-      username: 'username',
-      email: 'abc@abc.com',
-      bio_description: 'this is bio',
-    })
-    @post = Post.new({
       user_id: @user.id,
       content: 'post content',
       attachment_url: '',
-      hashtags_str: '[]',
+      hashtags: [],
     })
     @post.save()
   end

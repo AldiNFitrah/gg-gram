@@ -13,7 +13,7 @@ class Post
     @user_id = params[:user_id]
     @content = params[:content]
     @attachment_url = params[:attachment_url]
-    @hashtags_str = params[:hashtags_str]&.downcase()
+    @hashtags = params[:hashtags] || []
     @created_at = params[:created_at]
     @updated_at = params[:updated_at]
   end
@@ -21,11 +21,9 @@ class Post
   def save()
     self.validate()
 
-    esacaped_hashtags_str = @@db_client.escape(@hashtags_str)
-
     @@db_client.query("
       INSERT INTO posts(user_id, content, attachment_url, hashtags_str) VALUES
-        (#{@user_id}, '#{@content}', '#{@attachment_url}', '#{esacaped_hashtags_str}')
+        (#{@user_id}, '#{@content}', '#{@attachment_url}', '#{@hashtags}')
     ")
     @id = @@db_client.last_id
 
@@ -37,7 +35,7 @@ class Post
 
     self.validate_user_id()
     self.validate_content()
-    self.validate_hashtags_str()
+    self.validate_hashtags()
   end
 
   def validate_id()
@@ -60,19 +58,12 @@ class Post
     end
   end
 
-  def validate_hashtags_str()
-    begin
-      hashtag_array = eval(@hashtags_str)
-    rescue SyntaxError
-      raise StandardError.new('hashtags_str must be a valid array')
+  def validate_hashtags()
+    if !@hashtags.is_a?(Array)
+      raise StandardError.new('hashtags must be a valid array')
     end
 
-    if !hashtag_array.is_a?(Array)
-      raise StandardError.new('hashtags_str must be a valid array')
-    end
-
-    hashtag_array = eval(@hashtags_str)
-    hashtag_array.each do |hashtag|
+    @hashtags.each do |hashtag|
       if !hashtag.is_a?(String)
         raise StandardError.new('hashtags_str contains a not-a-string element')
       end
@@ -112,7 +103,7 @@ class Post
         user_id: data['user_id'],
         content: data['content'],
         attachment_url: data['attachment_url'],
-        hashtags_str: data['hashtags_str'],
+        hashtags: eval(data['hashtags_str']),
         created_at: data['created_at'],
         updated_at: data['updated_at'],
       })
