@@ -2,9 +2,10 @@ require './db/mysql_connector.rb'
 require './models/post.rb'
 require './models/user.rb'
 
+
 class Comment
   attr_reader :id, :user_id, :post_id, :created_at, :updated_at
-  attr_accessor :content, :attachment_url, :hashtags_str
+  attr_accessor :content, :attachment_url, :hashtags
 
   @@db_client = MySqlClient.instance()
 
@@ -14,7 +15,7 @@ class Comment
     @post_id = params[:post_id]
     @content = params[:content]
     @attachment_url = params[:attachment_url]
-    @hashtags_str = params[:hashtags_str]&.downcase()
+    @hashtags = params[:hashtags] || Array.new()
     @created_at = params[:created_at]
     @updated_at = params[:updated_at]
   end
@@ -22,11 +23,10 @@ class Comment
   def save()
     self.validate()
 
-    esacaped_hashtags_str = @@db_client.escape(@hashtags_str)
 
     @@db_client.query("
       INSERT INTO comments(user_id, post_id, content, attachment_url, hashtags_str) VALUES
-        (#{@user_id}, #{@post_id}, '#{@content}', '#{@attachment_url}', '#{esacaped_hashtags_str}')
+        (#{@user_id}, #{@post_id}, '#{@content}', '#{@attachment_url}', '#{@hashtags}')
     ")
     @id = @@db_client.last_id
 
@@ -39,7 +39,7 @@ class Comment
     self.validate_user_id()
     self.validate_post_id()
     self.validate_content()
-    self.validate_hashtags_str()
+    self.validate_hashtags()
   end
 
   def validate_id()
@@ -70,24 +70,17 @@ class Comment
     end
   end
 
-  def validate_hashtags_str()
-    begin
-      hashtag_array = eval(@hashtags_str)
-    rescue SyntaxError
-      raise StandardError.new('hashtags_str must be a valid array')
+  def validate_hashtags()
+    if !@hashtags.is_a?(Array)
+      raise StandardError.new('hashtags must be a valid array')
     end
 
-    if !hashtag_array.is_a?(Array)
-      raise StandardError.new('hashtags_str must be a valid array')
-    end
-
-    hashtag_array = eval(@hashtags_str)
-    hashtag_array.each do |hashtag|
+    @hashtags.each do |hashtag|
       if !hashtag.is_a?(String)
-        raise StandardError.new('hashtags_str contains a not-a-string element')
+        raise StandardError.new('hashtags contains a not-a-string element')
       end
       if !hashtag.start_with?('#')
-        raise StandardError.new('hashtags_str contains an invalid hashtag')
+        raise StandardError.new('hashtags contains an invalid hashtag')
       end
     end
   end
@@ -123,7 +116,7 @@ class Comment
         post_id: data['post_id'],
         content: data['content'],
         attachment_url: data['attachment_url'],
-        hashtags_str: data['hashtags_str'],
+        hashtags: data['hashtags'],
         created_at: data['created_at'],
         updated_at: data['updated_at'],
       })
@@ -140,7 +133,7 @@ class Comment
       self.post_id == other.post_id &&
       self.content == other.content &&
       self.attachment_url == other.attachment_url &&
-      self.hashtags_str == other.hashtags_str &&
+      self.hashtags == other.hashtags &&
       self.created_at == other.created_at &&
       self.updated_at == other.updated_at
     )
