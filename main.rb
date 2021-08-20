@@ -29,6 +29,12 @@ class GgGramApp < Sinatra::Base
         PostController.create(params)
       end
     end
+
+    namespace '/posts' do
+      get '' do
+        PostController.list(params)
+      end
+    end
   end
 
   run! if __FILE__ == $0

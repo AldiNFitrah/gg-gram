@@ -1,4 +1,5 @@
 require 'rack/test'
+require 'cgi'
 
 require './controllers/user_controller.rb'
 require './main.rb'
@@ -68,7 +69,7 @@ describe PostController do
         expect(post.hashtags.length()).to(eq(2))
         expect(post.hashtags).to(match_array(["#stopInsecure", "#beYourself"]))
       end
-      
+
       it 'response the hashtags' do
         expect(last_response.status).to(eq(201))
 
@@ -89,6 +90,58 @@ describe PostController do
       it 'response with bad request status code' do
         expect(last_response.status).to(eq(400))
         expect(@response_body[:error]).to(include("user"))
+      end
+    end
+  end
+
+  describe '.list' do
+    context 'get with a hashtag that is contained in 2 posts' do
+      before(:each) do
+        Post.new({
+          user_id: @user.id,
+          content: '#COMPFEST13 and #TechToElevate',
+          attachment_url: '/public/abc.jpg',
+          hashtags: ['#COMPFEST13', '#TechToElevate'],
+        }).save()
+
+        Post.new({
+          user_id: @user.id,
+          content: '#GenerasiGigih and #TechToElevate',
+          attachment_url: '/public/abc.jpg',
+          hashtags: ['#GenerasiGigih', '#TechToElevate'],
+        }).save()
+
+        escaped_hashtag = CGI.escape('#TechToElevate')
+        url = "/api/posts?hashtag=#{escaped_hashtag}"
+        get(url)
+        @response_body = eval(last_response.body)
+      end
+
+      it 'returns the 2 posts' do
+        expect(last_response.status).to(eq(200))
+        expect(@response_body.length).to(eq(2))
+      end
+    end
+
+    context 'get without a hashtag' do
+      it 'response with 400 bad request' do
+        get("/api/posts")
+        
+        expect(last_response.status).to(eq(400))
+      end
+    end
+
+    context 'get with a hashtag that is contained in no posts' do
+      before(:each) do
+        escaped_hashtag = CGI.escape('#LampauiBatasmu')
+        url = "/api/posts?hashtag=#{escaped_hashtag}"
+        get(url)
+        @response_body = eval(last_response.body)
+      end
+
+      it 'returns 0 posts' do
+        expect(last_response.status).to(eq(200))
+        expect(@response_body.length).to(eq(0))
       end
     end
   end

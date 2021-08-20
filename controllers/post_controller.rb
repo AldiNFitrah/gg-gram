@@ -1,3 +1,5 @@
+require 'json'
+
 require './models/post.rb'
 
 
@@ -21,6 +23,18 @@ class PostController
     return [201, post.to_json()]
   end
 
+  def self.list(params)
+    if !valid_hashtag?(params['hashtag'])
+      return [400, {error: 'need to filter by one valid hashtag'}.to_json()]
+    end
+
+    hashtag = params['hashtag']
+    posts = Post.all()
+    filtered_posts = filter_posts_by_hashtag(posts, hashtag)
+    serialized_posts = serialize_posts(filtered_posts)
+    return [200, serialized_posts]
+  end
+
   def self.extract_hashtags(content)
     hashtags = []
 
@@ -36,8 +50,33 @@ class PostController
 
   def self.valid_hashtag?(word)
     return (
+      word.is_a?(String) &&
       word.start_with?('#') &&
       word.length > 1
     )
+  end
+
+  def self.filter_posts_by_hashtag(posts, hashtag)
+    filtered_posts = []
+    posts.each do |post|
+      if post_contains_hashtag?(post, hashtag)
+        filtered_posts.push(post)
+      end
+    end
+
+    return filtered_posts
+  end
+
+  def self.post_contains_hashtag?(post, hashtag)
+    return post.hashtags.include?(hashtag)
+  end
+
+  def self.serialize_posts(posts)
+    serialized_posts = []
+    posts.each do |post|
+      serialized_posts.push(post.to_hash)
+    end
+
+    return serialized_posts.to_json()
   end
 end
