@@ -4,7 +4,7 @@ Description=Sinatra application
 [Service]
 User=root
 WorkingDirectory=/app
-EnvironmentFile=/app/.env
+EnvironmentFile=/home/gbe01011/.env
 ExecStart=/home/gbe01011/.rbenv/shims/ruby main.rb
 Restart=on-failure
 
