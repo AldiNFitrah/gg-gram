@@ -1,7 +1,6 @@
-require 'rack/test'
 require 'cgi'
+require 'rack/test'
 
-require './controllers/user_controller.rb'
 require './main.rb'
 require './models/post.rb'
 require './models/user.rb'
@@ -75,7 +74,6 @@ describe PostController do
 
         expect(@response_body[:hashtags].length()).to(eq(2))
         expect(@response_body[:hashtags]).to(match_array(["#stopInsecure", "#beYourself"]))
-        response_body = eval(last_response.body)
       end
     end
 
