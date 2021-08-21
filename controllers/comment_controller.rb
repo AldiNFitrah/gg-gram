@@ -23,7 +23,7 @@ class CommentController
       user_id: params['user_id'],
       post_id: params['post_id'],
       content: params['content'],
-      attachment_path: params['attachment_path'],
+      attachment_path: file_path,
       hashtags: hashtags,
     })
 
