@@ -7,13 +7,11 @@
 
   tasks:
   - name: Install Essential Dependencies
-    sudo: yes
     tasks:
     - shell: apt-get update -y && apt-get upgrade -y && apt-get dist-upgrade -y
     - shell: apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev dirmngr gnupg apt-transport-https ca-certificates
 
   - name: Install Ruby
-    sudo: yes
     tasks:
     - shell: git clone https://github.com/rbenv/rbenv.git ~/.rbenv
     - shell: echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
@@ -26,7 +24,6 @@
     - shell: rbenv global 2.7.3
 
   - name: Install MySql
-    sudo: yes
     tasks:
     - shell: apt install mysql-server
     - shell: apt-get install libmysqlclient-dev
@@ -42,7 +39,6 @@
     - shell: git clone https://github.com/AldiNFitrah/gg-gram.git /app
 
   - name: Setup Database
-    sudo: yes
     tasks:
     - shell: mysql -u root < /app/db/create_database.sql
     - shell: mysql -u root -p gg_gram < /app/db/schema.sql
