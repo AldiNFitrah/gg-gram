@@ -7,7 +7,7 @@ require './models/post.rb'
 require './models/user.rb'
 
 
-describe PostController do
+describe CommentController do
 
   include Rack::Test::Methods
 
@@ -114,6 +114,29 @@ describe PostController do
       it 'response with bad request status code' do
         expect(last_response.status).to(eq(400))
         expect(@response_body[:error]).to(include("post"))
+      end
+    end
+
+    context 'post valid data with content containing duplicated hashtags with mixed cases' do
+      before(:each) do
+        post("/api/posts/#{@post.id}/comment", params={
+          'user_id' => @user.id,
+          'content'=> 'delete soon #stopInsecure and #beYourself #StopInsecure #BeYourself',
+        })
+        @response_body = eval(last_response.body)
+      end
+
+      it 'is created' do
+        expect(last_response.status).to(eq(201))
+      end
+
+      it 'stores the downcased hashtag and remove duplicates' do
+        comment_id = @response_body[:id]
+
+        comment = Comment.get_by_id(comment_id)
+
+        expect(comment.hashtags.length).to(eq(2))
+        expect(comment.hashtags).to(match_array(['#beyourself', '#stopinsecure']))
       end
     end
   end

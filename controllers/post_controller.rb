@@ -46,7 +46,7 @@ class PostController
       end
     end
 
-    return hashtags
+    return hashtags.uniq
   end
 
   def self.valid_hashtag?(word)

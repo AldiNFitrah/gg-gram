@@ -90,6 +90,28 @@ describe PostController do
         expect(@response_body[:error]).to(include("user"))
       end
     end
+
+    context 'post valid data with content containing duplicated hashtags with mixed cases' do
+      before(:each) do
+        post("/api/users/#{@user.id}/post", params={
+          'content'=> 'delete soon #stopInsecure and #beYourself #StopInsecure #BeYourself',
+        })
+        @response_body = eval(last_response.body)
+      end
+
+      it 'is created' do
+        expect(last_response.status).to(eq(201))
+      end
+
+      it 'stores the downcased hashtag and remove duplicates' do
+        post_id = @response_body[:id]
+
+        post = Post.get_by_id(post_id)
+
+        expect(post.hashtags.length).to(eq(2))
+        expect(post.hashtags).to(match_array(['#beyourself', '#stopinsecure']))
+      end
+    end
   end
 
   describe '.list' do
