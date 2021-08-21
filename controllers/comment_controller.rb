@@ -11,7 +11,7 @@ class CommentController
       user_id: params['user_id'],
       post_id: params['post_id'],
       content: params['content'],
-      attachment_url: params['attachment_url'],
+      attachment_path: params['attachment_path'],
       hashtags: hashtags,
     })
 

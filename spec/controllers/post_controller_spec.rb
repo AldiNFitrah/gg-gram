@@ -1,4 +1,5 @@
 require 'cgi'
+require 'fileutils'
 require 'rack/test'
 
 require './main.rb'
@@ -110,6 +111,101 @@ describe PostController do
 
         expect(post.hashtags.length).to(eq(2))
         expect(post.hashtags).to(match_array(['#beyourself', '#stopinsecure']))
+      end
+    end
+  end
+
+  describe '.create with attachment' do
+    context 'post content data with attachment to a valid user via url' do
+      before(:each) do
+        FileUtils.mkdir_p('test')
+        File.open('test/file.txt', 'wb') do |f|
+          f.write('abc')
+        end
+        @file = File.open('test/file.txt', 'wb')
+        @uploaded_file = Rack::Test::UploadedFile.new(@file)
+
+        allow(File).to(receive(:open).and_return(@file))
+        allow(File).to(receive(:delete))
+      end
+      
+      it 'is created' do
+        post("/api/users/#{@user.id}/post", params={
+          'content' => 'content with attachment',
+          'attachment' => @uploaded_file,
+        })
+        expect(Post.all().count()).to(eq(1))
+      end
+      
+      it 'create file and not delete it' do
+        expect(File).to(receive(:open))
+        expect(File).not_to(receive(:delete))
+
+        post("/api/users/#{@user.id}/post", params={
+          'content' => 'content with attachment',
+          'attachment' => @uploaded_file,
+        })
+      end
+
+      it 'response the created post' do
+        post("/api/users/#{@user.id}/post", params={
+          'content' => 'content with attachment',
+          'attachment' => @uploaded_file,
+        })
+        response_body = eval(last_response.body)
+
+        expect(last_response.status).to(eq(201))
+
+        expect(response_body[:id]).to(be_kind_of(Integer))
+        expect(response_body[:created_at]).not_to(be_nil())
+        expect(response_body[:updated_at]).not_to(be_nil())
+        expect(response_body).to(include({
+          :user_id => @user.id,
+          :content => 'content with attachment',
+          :hashtags => [],
+        }))
+      end
+
+      after(:each) do
+        @file.close()
+        FileUtils.remove_dir('test')
+      end
+    end
+
+    context 'post invalid data with attachment via url' do
+      before(:each) do
+        FileUtils.mkdir_p('test')
+        File.open('test/file.txt', 'wb') do |f|
+          f.write('abc')
+        end
+        @file = File.open('test/file.txt', 'wb')
+        @uploaded_file = Rack::Test::UploadedFile.new(@file)
+
+        allow(File).to(receive(:open).and_return(@file))
+      end
+
+      it 'not created' do
+        post("/api/users/#{@user.id}/post", params={
+          'content' => 'c' * 1001,
+          'attachment' => @uploaded_file,
+        })
+
+        expect(Post.all().count()).to(eq(0))
+      end
+
+      it 'create a file then delete it again' do
+        expect(File).to(receive(:open))
+        expect(File).to(receive(:delete))
+
+        post("/api/users/#{@user.id}/post", params={
+          'content' => 'c' * 1001,
+          'attachment' => @uploaded_file,
+        })
+      end
+
+      after(:each) do
+        @file.close()
+        FileUtils.remove_dir('test')
       end
     end
   end

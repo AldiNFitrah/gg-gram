@@ -16,7 +16,7 @@ class GgGramApp < Sinatra::Base
 
   set :bind, "0.0.0.0"
 
-  before do
+  before '/api/*' do
     content_type 'application/json'
   end
 
@@ -48,6 +48,8 @@ class GgGramApp < Sinatra::Base
       end
     end
   end
+
+
 
   run! if __FILE__ == $0
 end

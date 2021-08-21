@@ -1,4 +1,5 @@
 require 'json'
+require 'securerandom'
 
 require './models/post.rb'
 
@@ -7,16 +8,35 @@ class PostController
   def self.create(params)
     hashtags = extract_hashtags(params['content'])
 
+    is_with_file = !params['attachment'].nil?
+    file_path = nil
+    if is_with_file
+      file_info = params['attachment']
+      filename = file_info['filename']
+      file_ext = File.extname(filename)
+      generated_random_filename = SecureRandom.urlsafe_base64() + file_ext
+      file_content = file_info['tempfile']
+      file_path = "public/#{generated_random_filename}"
+    end
+
     post = Post.new({
       user_id: params['user_id'],
       content: params['content'],
-      attachment_path: params['attachment_path'],
+      attachment_path: file_path,
       hashtags: hashtags,
     })
 
     begin
+      if is_with_file
+        File.open(file_path, 'wb') do |file|
+          file.write(file_content.read())
+        end
+      end
       post.save()
     rescue Exception => e
+      if is_with_file
+        File.delete(file_path)
+      end
       return [400, {error: e.to_s}.to_json()]
     end
 
