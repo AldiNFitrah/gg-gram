@@ -76,14 +76,14 @@ describe PostController do
 
         expect(Comment.all().count()).to(eq(1))
         expect(comment.hashtags.length()).to(eq(2))
-        expect(comment.hashtags).to(match_array(["#stopInsecure", "#beYourself"]))
+        expect(comment.hashtags).to(match_array(["#stopinsecure", "#beyourself"]))
       end
 
       it 'response the hashtags' do
         expect(last_response.status).to(eq(201))
 
         expect(@response_body[:hashtags].length()).to(eq(2))
-        expect(@response_body[:hashtags]).to(match_array(["#stopInsecure", "#beYourself"]))
+        expect(@response_body[:hashtags]).to(match_array(["#stopinsecure", "#beyourself"]))
       end
     end
 

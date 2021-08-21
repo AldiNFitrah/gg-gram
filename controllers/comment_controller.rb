@@ -29,8 +29,9 @@ class CommentController
 
     words = content.split()
     words.each do |word|
-      if valid_hashtag?(word)
-        hashtags.push(word)
+      downcased_word = word.downcase()
+      if valid_hashtag?(downcased_word)
+        hashtags.push(downcased_word)
       end
     end
 

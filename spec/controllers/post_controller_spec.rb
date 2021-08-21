@@ -66,14 +66,14 @@ describe PostController do
 
         expect(Post.all().count()).to(eq(1))
         expect(post.hashtags.length()).to(eq(2))
-        expect(post.hashtags).to(match_array(["#stopInsecure", "#beYourself"]))
+        expect(post.hashtags).to(match_array(["#stopinsecure", "#beyourself"]))
       end
 
       it 'response the hashtags' do
         expect(last_response.status).to(eq(201))
 
         expect(@response_body[:hashtags].length()).to(eq(2))
-        expect(@response_body[:hashtags]).to(match_array(["#stopInsecure", "#beYourself"]))
+        expect(@response_body[:hashtags]).to(match_array(["#stopinsecure", "#beyourself"]))
       end
     end
 
@@ -124,7 +124,7 @@ describe PostController do
     context 'get without a hashtag' do
       it 'response with 400 bad request' do
         get("/api/posts")
-        
+
         expect(last_response.status).to(eq(400))
       end
     end
