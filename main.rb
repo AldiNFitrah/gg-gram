@@ -4,6 +4,7 @@ require 'sinatra'
 require 'sinatra/namespace'
 require 'sinatra/reloader' if development?
 
+require './controllers/comment_controller.rb'
 require './controllers/post_controller.rb'
 require './controllers/user_controller.rb'
 
@@ -33,6 +34,10 @@ class GgGramApp < Sinatra::Base
     namespace '/posts' do
       get '' do
         PostController.list(params)
+      end
+
+      post '/:post_id/comment' do
+        CommentController.create(params)
       end
     end
   end

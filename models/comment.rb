@@ -130,7 +130,7 @@ class Comment
         post_id: data['post_id'],
         content: data['content'],
         attachment_url: data['attachment_url'],
-        hashtags: data['hashtags'],
+        hashtags: eval(data['hashtags_str']),
         created_at: data['created_at'],
         updated_at: data['updated_at'],
       })
@@ -151,5 +151,22 @@ class Comment
       self.created_at == other.created_at &&
       self.updated_at == other.updated_at
     )
+  end
+
+  def to_hash()
+    return {
+      'id' => @id,
+      'user_id' => @user_id,
+      'post_id' => @post_id,
+      'content' => @content,
+      'attachment_url' => @attachment_url,
+      'hashtags' => @hashtags,
+      'created_at' => @created_at,
+      'updated_at' => @updated_at,
+    }
+  end
+
+  def to_json()
+    return self.to_hash().to_json()
   end
 end
