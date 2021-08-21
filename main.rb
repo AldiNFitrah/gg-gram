@@ -49,7 +49,9 @@ class GgGramApp < Sinatra::Base
     end
   end
 
-
+  get '/public/:file' do
+    send_file("./public/#{params['file']}")
+  end
 
   run! if __FILE__ == $0
 end
