@@ -1,0 +1,107 @@
+---
+- name: GCP
+  hosts: all
+  vars:
+    ansible_ssh_user: 'gbe01011'
+    # ansible_python_interpreter: '/usr/bin/python2'
+
+  tasks:
+  - name: Install Essential Dependencies
+    become: yes
+    shell: |
+      apt-get update -y && apt-get upgrade -y && apt-get dist-upgrade -y
+      apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev dirmngr gnupg apt-transport-https ca-certificates
+
+  # - name: Install Ruby
+  #   become: yes
+  #   shell: |
+  #     git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+  #     echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+  #     echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+  #     git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+  #     echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
+  #     git clone https://github.com/rbenv/rbenv-vars.git ~/.rbenv/plugins/rbenv-vars
+  #     exec $SHELL
+  #     rbenv install 2.7.3 -s -v
+  #     rbenv global 2.7.3
+  #   ignore_errors: yes
+  #   register: out
+
+  # - debug: var=out.stdout_lines
+
+  - name: Install MySql
+    become: yes
+    shell: |
+      apt install mysql-server
+      apt-get install libmysqlclient-dev
+    register: out
+
+  - debug: var=out.stdout_lines
+
+  - name: Start MySql Server
+    service:
+      name: mysql
+      state: started
+    register: out
+
+  - debug: var=out.stdout_lines
+
+  - name: Clone App
+    become: yes
+    shell: |
+      rm -rf /app
+      git clone https://github.com/AldiNFitrah/gg-gram.git /app
+    register: out
+
+  - debug: var=out.stdout_lines
+
+  - name: Setup Database
+    become: yes
+    shell: |
+      mysql -u root < /app/db/create_database.sql
+      mysql -u root -p gg_gram < /app/db/schema.sql
+      mysql -u root -p gg_gram_test < /app/db/schema.sql
+    register: out
+
+  - debug: var=out.stdout_lines
+
+  - name: Stop Sinatra Server
+    systemd:
+      name: sinatra
+      state: stopped
+    ignore_errors: yes
+    register: out
+
+  - debug: var=out.stdout_lines
+
+  - name: Delete Sinatra Service
+    become: yes
+    shell: rm -rf /etc/systemd/system/sinatra.service
+    ignore_errors: yes
+    register: out
+
+  - debug: var=out.stdout_lines
+
+  - name: Copy Sinatra Service
+    copy:
+      src: /app/sinatra.service
+      dest: /etc/systemd/system/sinatra.service
+      remote_src: yes
+    register: out
+
+  - debug: var=out.stdout_lines
+
+  - name: Reload Systemd
+    systemd:
+      daemon_reload: yes
+    register: out
+
+  - debug: var=out.stdout_lines
+
+  - name: Start Sinatra Server
+    systemd:
+      name: sinatra
+      state: started
+    register: out
+
+  - debug: var=out.stdout_lines
