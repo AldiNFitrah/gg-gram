@@ -4,7 +4,6 @@ require 'sinatra'
 require 'sinatra/namespace'
 require 'sinatra/reloader' if development?
 
-require './controllers/asset_controller.rb'
 require './controllers/comment_controller.rb'
 require './controllers/hashtag_controller.rb'
 require './controllers/post_controller.rb'
@@ -51,7 +50,11 @@ class GgGramApp < Sinatra::Base
   end
 
   get '/public/:file' do
-    AssetController.serve(params)
+    begin
+      send_file("./public/#{params['file']}")
+    rescue => exception
+      [404, {"error": "file not found"}.to_json()]
+    end
   end
 
   run! if __FILE__ == $0
