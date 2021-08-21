@@ -61,6 +61,7 @@
       mysql -u root < /app/db/create_database.sql
       mysql -u root -D gg_gram < /app/db/schema.sql
       mysql -u root -D gg_gram_test < /app/db/schema.sql
+    ignore_errors: yes
     register: out
 
   - debug: var=out.stdout_lines
@@ -96,6 +97,7 @@
     become: yes
     systemd:
       daemon_reload: yes
+    ignore_errors: yes
     register: out
 
   - debug: var=out.stdout_lines
