@@ -121,6 +121,25 @@ class Comment
     return convert_sql_to_ruby(raw_data)[0]
   end
 
+  def self.get_last_posted(year: 0, month: 0, week: 0, day: 0, hour: 0, minute: 0, second: 0)
+    raw_data = @@db_client.query("
+      SELECT *
+      FROM comments
+      WHERE
+        updated_at >= (
+          NOW()
+          - INTERVAL #{year} YEAR
+          - INTERVAL #{month} MONTH
+          - INTERVAL #{week} WEEK
+          - INTERVAL #{day} DAY
+          - INTERVAL #{hour} HOUR
+          - INTERVAL #{minute} MINUTE
+          - INTERVAL #{second} SECOND
+        )
+    ")
+    return convert_sql_to_ruby(raw_data)
+  end
+
   def self.convert_sql_to_ruby(raw_data)
     comments = []
     raw_data.each do |data|

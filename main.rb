@@ -5,6 +5,7 @@ require 'sinatra/namespace'
 require 'sinatra/reloader' if development?
 
 require './controllers/comment_controller.rb'
+require './controllers/hashtag_controller.rb'
 require './controllers/post_controller.rb'
 require './controllers/user_controller.rb'
 
@@ -38,6 +39,12 @@ class GgGramApp < Sinatra::Base
 
       post '/:post_id/comment' do
         CommentController.create(params)
+      end
+    end
+
+    namespace '/hashtags' do
+      get '/trending' do
+        HashtagController.get_trending(5)
       end
     end
   end
