@@ -3,7 +3,7 @@
   hosts: all
   vars:
     ansible_ssh_user: 'gbe01011'
-    ansible_python_interpreter: '/usr/bin/python2'
+    # ansible_python_interpreter: '/usr/bin/python2'
 
   tasks:
   - name: Install Essential Dependencies
