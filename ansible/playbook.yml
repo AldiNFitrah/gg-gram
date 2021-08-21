@@ -83,6 +83,7 @@
   - debug: var=out.stdout_lines
 
   - name: Copy Sinatra Service
+    become: yes
     copy:
       src: /app/sinatra.service
       dest: /etc/systemd/system/sinatra.service
@@ -92,6 +93,7 @@
   - debug: var=out.stdout_lines
 
   - name: Reload Systemd
+    become: yes
     systemd:
       daemon_reload: yes
     register: out
@@ -99,6 +101,7 @@
   - debug: var=out.stdout_lines
 
   - name: Start Sinatra Server
+    become: yes
     systemd:
       name: sinatra
       state: started
