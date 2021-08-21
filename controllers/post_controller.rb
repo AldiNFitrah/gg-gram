@@ -48,7 +48,7 @@ class PostController
       return [400, {error: 'need to filter by one valid hashtag'}.to_json()]
     end
 
-    hashtag = params['hashtag']
+    hashtag = params['hashtag'].downcase()
     posts = Post.all()
     filtered_posts = filter_posts_by_hashtag(posts, hashtag)
     serialized_posts = serialize_posts(filtered_posts)
@@ -89,7 +89,8 @@ class PostController
   end
 
   def self.post_contains_hashtag?(post, hashtag)
-    return post.hashtags.include?(hashtag)
+    hashtags = post.hashtags.map { |hashtag| hashtag.downcase() }
+    return hashtags.include?(hashtag)
   end
 
   def self.serialize_posts(posts)

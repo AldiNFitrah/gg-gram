@@ -260,5 +260,26 @@ describe PostController do
         expect(@response_body.length).to(eq(0))
       end
     end
+
+    context 'get with a hashtag that is mixcased' do
+      before(:each) do
+        Post.new({
+          user_id: @user.id,
+          content: '#COMPFEST13 and #TechToElevate',
+          attachment_path: '/public/abc.jpg',
+          hashtags: ['#COMPFEST13', '#TechToElevate'],
+        }).save()
+
+        escaped_hashtag = CGI.escape('#TECHTOELEVATE')
+        url = "/api/posts?hashtag=#{escaped_hashtag}"
+        get(url)
+        @response_body = eval(last_response.body)
+      end
+
+      it 'returns the 1 posts' do
+        expect(last_response.status).to(eq(200))
+        expect(@response_body.length).to(eq(1))
+      end
+    end
   end
 end
