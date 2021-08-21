@@ -1,0 +1,74 @@
+---
+- name: GCP
+  hosts: all
+  vars:
+    ansible_ssh_user: 'root'
+    ansible_python_interpreter: '/usr/bin/python2'
+
+  tasks:
+  - name: Install Essential Dependencies
+    sudo: yes
+    tasks:
+    - shell: apt-get update -y && apt-get upgrade -y && apt-get dist-upgrade -y
+    - shell: apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev dirmngr gnupg apt-transport-https ca-certificates
+
+  - name: Install Ruby
+    sudo: yes
+    tasks:
+    - shell: git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+    - shell: echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+    - shell: echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+    - shell: git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+    - shell: echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
+    - shell: git clone https://github.com/rbenv/rbenv-vars.git ~/.rbenv/plugins/rbenv-vars
+    - shell: exec $SHELL
+    - shell: rbenv install 2.7.3
+    - shell: rbenv global 2.7.3
+
+  - name: Install MySql
+    sudo: yes
+    tasks:
+    - shell: apt install mysql-server
+    - shell: apt-get install libmysqlclient-dev
+
+  - name: Start MySql Server
+    service:
+      name: mysql
+      state: started
+
+  - name: Clone App
+    tasks:
+    - shell: rm -rf /app
+    - shell: git clone https://github.com/AldiNFitrah/gg-gram.git /app
+
+  - name: Setup Database
+    sudo: yes
+    tasks:
+    - shell: mysql -u root < /app/db/create_database.sql
+    - shell: mysql -u root -p gg_gram < /app/db/schema.sql
+    - shell: mysql -u root -p gg_gram_test < /app/db/schema.sql
+
+  - name: Stop Sinatra Server
+    systemd:
+      name: sinatra
+      state: stopped
+    ignore_errors: yes
+
+  - name: Delete Sinatra Service
+    shell: rm -rf /etc/systemd/system/sinatra.service
+    ignore_errors: yes
+
+  - name: Copy Sinatra Service
+    copy:
+      src: /app/sinatra.service
+      dest: /etc/systemd/system/sinatra.service
+      remote_src: yes
+
+  - name: Reload Systemd
+    systemd:
+      daemon_reload: yes
+
+  - name: Start Sinatra Server
+    systemd:
+      name: sinatra
+      state: started
