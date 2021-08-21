@@ -22,8 +22,10 @@
       echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
       git clone https://github.com/rbenv/rbenv-vars.git ~/.rbenv/plugins/rbenv-vars
       exec $SHELL
-      rbenv install 2.7.3
+      rbenv install 2.7.3 -s -v
       rbenv global 2.7.3
+    ignore_errors: yes
+    debugger: always
 
   - name: Install MySql
     become: yes
