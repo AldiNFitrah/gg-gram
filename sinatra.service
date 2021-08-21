@@ -5,7 +5,7 @@ Description=Sinatra application
 User=root
 WorkingDirectory=/app
 EnvironmentFile=/app/.env
-ExecStart=/root/.rbenv/shims/ruby main.rb
+ExecStart=/home/gbe01011/.rbenv/shims/ruby main.rb
 Restart=on-failure
 
 [Install]
