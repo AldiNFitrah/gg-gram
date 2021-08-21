@@ -19,7 +19,7 @@ describe Comment do
     @post = Post.new({
       user_id: @user.id,
       content: 'post content',
-      attachment_url: '',
+      attachment_path: '',
       hashtags: [],
     })
     @post.save()
@@ -32,7 +32,7 @@ describe Comment do
           user_id: @user.id,
           post_id: @post.id,
           content: 'this is a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
         comment.save()
@@ -51,7 +51,7 @@ describe Comment do
           user_id: @user.id,
           post_id: @post.id,
           content: 'this is a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
 
@@ -71,7 +71,7 @@ describe Comment do
           user_id: @user.id,
           post_id: @post.id,
           content: 'this is a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
         comment.save()
@@ -87,7 +87,7 @@ describe Comment do
           user_id: 54125,
           post_id: @post.id,
           content: 'this is a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
 
@@ -101,7 +101,7 @@ describe Comment do
           user_id: @user.id,
           post_id: 423432,
           content: 'this is a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
 
@@ -115,7 +115,7 @@ describe Comment do
           user_id: @user.id,
           post_id: @post.id,
           content: 'a' * 1001,
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
 
@@ -129,7 +129,7 @@ describe Comment do
           user_id: @user.id,
           post_id: @post.id,
           content: 'a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: "'#COMPFEST13'",
         })
 
@@ -143,7 +143,7 @@ describe Comment do
           user_id: @user.id,
           post_id: @post.id,
           content: 'a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: "['#COMPFEST13', '#TechToElevate'",
         })
 
@@ -157,7 +157,7 @@ describe Comment do
           user_id: @user.id,
           post_id: @post.id,
           content: 'a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: [1, 2, 3],
         })
 
@@ -171,7 +171,7 @@ describe Comment do
           user_id: @user.id,
           post_id: @post.id,
           content: 'a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', 'TechToElevate'],
         })
 
@@ -184,12 +184,12 @@ describe Comment do
     context 'given 2 comment instances in db' do
       it 'returns the 2 comments' do
         db_client.query("
-          INSERT INTO comments(user_id, post_id, content, attachment_url, hashtags_str) VALUES
+          INSERT INTO comments(user_id, post_id, content, attachment_path, hashtags_str) VALUES
             (#{@user.id}, #{@post.id}, 'content', '', '[]')
         ")
 
         db_client.query("
-          INSERT INTO comments(user_id, post_id, content, attachment_url, hashtags_str) VALUES
+          INSERT INTO comments(user_id, post_id, content, attachment_path, hashtags_str) VALUES
             (#{@user.id}, #{@post.id}, 'another content', '', '[]')
         ")
 
@@ -202,7 +202,7 @@ describe Comment do
     context 'given existing comment id' do
       it 'returns the corresponding comment' do
         db_client.query("
-          INSERT INTO comments(user_id, post_id, content, attachment_url, hashtags_str) VALUES
+          INSERT INTO comments(user_id, post_id, content, attachment_path, hashtags_str) VALUES
             (#{@user.id}, #{@post.id}, 'my content', '', '[]')
         ")
         comment_id = db_client.last_id
@@ -223,7 +223,7 @@ describe Comment do
     context 'given all same attributes' do
       it 'returns true' do
         db_client.query("
-          INSERT INTO comments(user_id, post_id, content, attachment_url, hashtags_str) VALUES
+          INSERT INTO comments(user_id, post_id, content, attachment_path, hashtags_str) VALUES
             (#{@user.id}, #{@post.id}, 'content', '', '[]')
         ")
         comment_id = db_client.last_id

@@ -5,7 +5,7 @@ require './models/user.rb'
 
 class Comment
   attr_reader :id, :user_id, :post_id, :created_at, :updated_at
-  attr_accessor :content, :attachment_url, :hashtags
+  attr_accessor :content, :attachment_path, :hashtags
 
   @@db_client = MySqlClient.instance()
 
@@ -14,7 +14,7 @@ class Comment
     @user_id = params[:user_id]
     @post_id = params[:post_id]
     @content = params[:content]
-    @attachment_url = params[:attachment_url]
+    @attachment_path = params[:attachment_path]
     @hashtags = params[:hashtags] || Array.new()
     @created_at = params[:created_at]
     @updated_at = params[:updated_at]
@@ -25,8 +25,8 @@ class Comment
 
 
     @@db_client.query("
-      INSERT INTO comments(user_id, post_id, content, attachment_url, hashtags_str) VALUES
-        (#{@user_id}, #{@post_id}, '#{@content}', '#{@attachment_url}', '#{@hashtags}')
+      INSERT INTO comments(user_id, post_id, content, attachment_path, hashtags_str) VALUES
+        (#{@user_id}, #{@post_id}, '#{@content}', '#{@attachment_path}', '#{@hashtags}')
     ")
     @id = @@db_client.last_id
 
@@ -93,7 +93,7 @@ class Comment
     @user_id = new_data.user_id
     @post_id = new_data.post_id
     @content = new_data.content
-    @attachment_url = new_data.attachment_url
+    @attachment_path = new_data.attachment_path
     @hashtags = new_data.hashtags
     @created_at = new_data.created_at
     @updated_at = new_data.updated_at
@@ -148,7 +148,7 @@ class Comment
         user_id: data['user_id'],
         post_id: data['post_id'],
         content: data['content'],
-        attachment_url: data['attachment_url'],
+        attachment_path: data['attachment_path'],
         hashtags: eval(data['hashtags_str']),
         created_at: data['created_at'],
         updated_at: data['updated_at'],
@@ -165,7 +165,7 @@ class Comment
       self.user_id == other.user_id &&
       self.post_id == other.post_id &&
       self.content == other.content &&
-      self.attachment_url == other.attachment_url &&
+      self.attachment_path == other.attachment_path &&
       self.hashtags == other.hashtags &&
       self.created_at == other.created_at &&
       self.updated_at == other.updated_at
@@ -178,7 +178,7 @@ class Comment
       'user_id' => @user_id,
       'post_id' => @post_id,
       'content' => @content,
-      'attachment_url' => @attachment_url,
+      'attachment_path' => @attachment_path,
       'hashtags' => @hashtags,
       'created_at' => @created_at,
       'updated_at' => @updated_at,

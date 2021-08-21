@@ -23,7 +23,7 @@ describe Post do
         post = Post.new({
           user_id: @user.id,
           content: 'this is a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
         post.save()
@@ -41,7 +41,7 @@ describe Post do
         post = Post.new({
           user_id: @user.id,
           content: 'this is a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
 
@@ -60,7 +60,7 @@ describe Post do
         post = Post.new({
           user_id: @user.id,
           content: 'this is a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
         post.save()
@@ -75,7 +75,7 @@ describe Post do
         post = Post.new({
           user_id: 54125,
           content: 'this is a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
 
@@ -88,7 +88,7 @@ describe Post do
         post = Post.new({
           user_id: @user.id,
           content: 'a' * 1001,
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         })
 
@@ -101,7 +101,7 @@ describe Post do
         post = Post.new({
           user_id: @user.id,
           content: 'a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: "#COMPFEST13",
         })
 
@@ -114,7 +114,7 @@ describe Post do
         post = Post.new({
           user_id: @user.id,
           content: 'a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: "['#COMPFEST13', '#TechToElevate'",
         })
 
@@ -127,7 +127,7 @@ describe Post do
         post = Post.new({
           user_id: @user.id,
           content: 'a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: [1, 2, 3],
         })
 
@@ -140,7 +140,7 @@ describe Post do
         post = Post.new({
           user_id: @user.id,
           content: 'a content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', 'TechToElevate'],
         })
 
@@ -153,12 +153,12 @@ describe Post do
     context 'given 2 post instances in db' do
       it 'returns the 2 posts' do
         db_client.query("
-          INSERT INTO posts(user_id, content, attachment_url, hashtags_str) VALUES
+          INSERT INTO posts(user_id, content, attachment_path, hashtags_str) VALUES
             (#{@user.id}, 'content', '', '[]')
         ")
 
         db_client.query("
-          INSERT INTO posts(user_id, content, attachment_url, hashtags_str) VALUES
+          INSERT INTO posts(user_id, content, attachment_path, hashtags_str) VALUES
             (#{@user.id}, 'another content', '', '[]')
         ")
 
@@ -171,7 +171,7 @@ describe Post do
     context 'given existing post id' do
       it 'returns the corresponding post' do
         db_client.query("
-          INSERT INTO posts(user_id, content, attachment_url, hashtags_str) VALUES
+          INSERT INTO posts(user_id, content, attachment_path, hashtags_str) VALUES
             (#{@user.id}, 'my content', '', '[]')
         ")
         post_id = db_client.last_id
@@ -192,7 +192,7 @@ describe Post do
     context 'given all same attributes' do
       it 'returns true' do
         db_client.query("
-          INSERT INTO posts(user_id, content, attachment_url, hashtags_str) VALUES
+          INSERT INTO posts(user_id, content, attachment_path, hashtags_str) VALUES
             (#{@user.id}, 'content', '', '[]')
         ")
         post_id = db_client.last_id

@@ -26,7 +26,7 @@ describe CommentController do
     @post = Post.new({
       user_id: @user.id,
       content: 'this is a content',
-      attachment_url: '/public/abc.jpg',
+      attachment_path: '/public/abc.jpg',
       hashtags: ['#Lampaui', '#Batasmu'],
     })
     @post.save()

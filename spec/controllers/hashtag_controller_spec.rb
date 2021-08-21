@@ -31,7 +31,7 @@ describe HashtagController do
         post = Post.new({
           user_id: @user.id,
           content: 'content',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#lampaui'],
         }).save()
 
@@ -39,14 +39,14 @@ describe HashtagController do
           user_id: @user.id,
           post_id: post.id,
           content: 'comment',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#batasmu'],
         }).save()
 
         get('/api/hashtags/trending')
         @response_body = eval(last_response.body)
       end
-      
+
       it 'counts both hashtag as trending' do
         expect(last_response.status).to(eq(200))
         expect(@response_body).to(include({
@@ -59,14 +59,14 @@ describe HashtagController do
     context 'given no post and comment in last 24 hours' do
       before(:each) do
         db_client.query("
-          INSERT INTO posts(user_id, content, attachment_url, hashtags_str, created_at, updated_at) VALUES
+          INSERT INTO posts(user_id, content, attachment_path, hashtags_str, created_at, updated_at) VALUES
             (#{@user.id}, 'abc', '', '#{["#goto"]}', NOW() - INTERVAL 25 HOUR, NOW() - INTERVAL 25 HOUR)
         ")
         post_id = db_client.last_id
         post = Post.get_by_id(post_id)
 
         db_client.query("
-          INSERT INTO comments(user_id, post_id, content, attachment_url, hashtags_str, created_at, updated_at) VALUES
+          INSERT INTO comments(user_id, post_id, content, attachment_path, hashtags_str, created_at, updated_at) VALUES
             (#{@user.id}, #{post_id}, 'abc', '', '#{["#together"]}', NOW() - INTERVAL 25 HOUR, NOW() - INTERVAL 25 HOUR)
         ")
 

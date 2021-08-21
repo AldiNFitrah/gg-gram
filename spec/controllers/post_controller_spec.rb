@@ -46,7 +46,7 @@ describe PostController do
         expect(response_body).to(include({
           :user_id => @user.id,
           :content => 'this is a content',
-          :attachment_url => '',
+          :attachment_path => '',
           :hashtags => [],
         }))
       end
@@ -120,14 +120,14 @@ describe PostController do
         Post.new({
           user_id: @user.id,
           content: '#COMPFEST13 and #TechToElevate',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#COMPFEST13', '#TechToElevate'],
         }).save()
 
         Post.new({
           user_id: @user.id,
           content: '#GenerasiGigih and #TechToElevate',
-          attachment_url: '/public/abc.jpg',
+          attachment_path: '/public/abc.jpg',
           hashtags: ['#GenerasiGigih', '#TechToElevate'],
         }).save()
 
