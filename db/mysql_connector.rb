@@ -7,7 +7,7 @@ Dotenv.load
 class MySqlClient
 
   def self.instance()
-    if @instance.nil?
+    if @instance.nil? || @instance.closed?
       @instance = get_client()
     end
 

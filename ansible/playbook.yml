@@ -67,9 +67,8 @@
   - debug: var=out.stdout_lines
 
   - name: Stop Sinatra Server
-    systemd:
-      name: sinatra
-      state: stopped
+    become: yes
+    shell: sudo systemctl stop sinatra.service
     ignore_errors: yes
     register: out
 
@@ -95,8 +94,7 @@
 
   - name: Reload Systemd
     become: yes
-    systemd:
-      daemon_reload: yes
+    shell: sudo systemctl daemon-reload
     ignore_errors: yes
     register: out
 
@@ -104,9 +102,7 @@
 
   - name: Start Sinatra Server
     become: yes
-    systemd:
-      name: sinatra
-      state: started
+    shell: sudo systemctl start sinatra.service
     register: out
 
   - debug: var=out.stdout_lines
